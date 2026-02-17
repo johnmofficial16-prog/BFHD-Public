@@ -1,0 +1,14 @@
+/* BFHD Logo Responsive Sizing */
+#bfhd-logo {
+    height: 2rem;
+    /* 32px for mobile */
+    width: auto;
+}
+
+/* Desktop sizing (tablets and up) */
+@media (min-width: 768px) {
+    #bfhd-logo {
+        height: 3rem;
+        /* 48px for desktop */
+    }
+}

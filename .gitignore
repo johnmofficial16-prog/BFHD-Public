@@ -1,0 +1,55 @@
+# Environment files (NEVER push - contains passwords/API keys)
+.env
+.env.backup
+.env.production
+.env.local
+
+# Vendor dependencies (Hostinger runs composer install)
+/vendor/
+
+# Node modules
+/node_modules/
+
+# Hot reload file
+/public/hot
+
+# Laravel cache and logs
+/storage/*.key
+/storage/logs/*
+/storage/framework/cache/*
+/storage/framework/sessions/*
+/storage/framework/views/*
+/bootstrap/cache/*
+
+# Testing
+.phpunit.result.cache
+phpunit.xml
+
+# IDE and editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Debug and temp files
+*.log
+*.txt
+*.html
+!resources/**/*.html
+
+# Test files (remove if you want these tracked)
+test_*.php
+probe_api.php
+extract_config.py
+api_response.json
+config_dump.txt
+miami.html
+widget_content.html
+trace_redirect.txt
+verification_output.txt
+verify_sfo.txt
+
+# Public HTML duplicate (if not needed)
+/public_html/

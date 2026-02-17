@@ -1,0 +1,1043 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
+    <title>TravelHybrid - Find the Best Travel Deals</title>
+    <meta name="description" content="Compare hundreds of travel sites instantly. Find the best deals on flights, hotels, cars, and vacation packages. Save time and money with TravelHybrid.">
+    
+    <!-- Premium Google Fonts: Plus Jakarta Sans (Display) + Inter (Body) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;300;400;500;600;700;800;900&family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    <!-- Alpine.js -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js"></script>
+    
+    <!-- Flatpickr -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    
+    <style>
+        /* Premium Typography System */
+        :root {
+            --font-display: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            
+            /* Premium Color Palette - Inspired by Wix/Canva 2024-2025 Trends */
+            --primary-600: #7c3aed;       /* Deep Purple */
+            --primary-700: #6d28d9;       /* Darker Purple */
+            --primary-800: #5b21b6;       /* Rich Purple */
+            --accent-coral: #ff6b6b;      /* Vibrant Coral */
+            --accent-peach: #ff8a65;      /* Warm Peach */
+            --accent-amber: #fbbf24;      /* Amber Gold */
+            --warm-gray-50: #fafaf9;      /* Warm White */
+            --warm-gray-100: #f5f5f4;     /* Light Cream */
+            --warm-gray-900: #1c1917;     /* Warm Black */
+            
+            /* Gradient Combinations */
+            --gradient-primary: linear-gradient(135deg, #7c3aed 0%, #ec4899 100%);
+            --gradient-warm: linear-gradient(135deg, #f59e0b 0%, #ff6b6b 100%);
+            --gradient-sunset: linear-gradient(135deg, #7c3aed 0%, #ff6b6b 50%, #fbbf24 100%);
+        }
+    </style>
+</head>
+<body class="overflow-x-hidden">
+    <!-- Full-Page Hero with Rotating Backgrounds -->
+    <div class="relative min-h-screen w-full overflow-hidden">
+        <!-- Rotating 4K Background Images -->
+        <div class="absolute inset-0 z-0">
+            <div class="hero-bg" style="background-image: url('https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=2400&q=90');"></div>
+            <div class="hero-bg" style="background-image: url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=2400&q=90'); opacity: 0;"></div>
+            <div class="hero-bg" style="background-image: url('https://images.unsplash.com/photo-1530521954074-e64f6810b32d?w=2400&q=90'); opacity: 0;"></div>
+            <div class="hero-bg" style="background-image: url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=2400&q=90'); opacity: 0;"></div>
+            
+            <!-- Dark Overlay for Readability -->
+            <div class="absolute inset-0 bg-black/40"></div>
+        </div>
+
+        <!-- Navigation -->
+        <nav class="fixed z-50 w-full transition-all duration-300" 
+             :class="{ 'bg-white/95 backdrop-blur-md shadow-md py-4': scrolled, 'py-6 bg-transparent': !scrolled }"
+             x-data="{ mobileMenuOpen: false, scrolled: false }" 
+             @scroll.window="scrolled = (window.pageYOffset > 20)">
+            <div class="max-w-7xl mx-auto px-6 flex justify-between items-center">
+                <!-- Logo -->
+                <a href="/" class="text-3xl font-black tracking-tight transition-colors"
+                   :class="{ 'text-gray-900': scrolled, 'text-white': !scrolled }">
+                    TravelHybrid
+                </a>
+
+                <!-- Desktop Menu -->
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="{{ route('blog') }}" class="font-semibold hover:text-purple-500 transition text-lg relative group"
+                       :class="{ 'text-gray-700': scrolled, 'text-white': !scrolled }">
+                        Blog
+                        <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-purple-500 transition-all duration-300 group-hover:w-full"></span>
+                    </a>
+                    <a href="{{ route('about') }}" class="font-semibold hover:text-purple-500 transition text-lg relative group"
+                       :class="{ 'text-gray-700': scrolled, 'text-white': !scrolled }">
+                        About
+                        <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-purple-500 transition-all duration-300 group-hover:w-full"></span>
+                    </a>
+                    <a href="{{ route('contact') }}" class="font-semibold hover:text-purple-500 transition text-lg relative group"
+                       :class="{ 'text-gray-700': scrolled, 'text-white': !scrolled }">
+                        Contact
+                        <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-purple-500 transition-all duration-300 group-hover:w-full"></span>
+                    </a>
+                    
+                    <!-- Sign In (Desktop) -->
+                    <a href="#" class="font-semibold hover:text-purple-500 transition text-lg flex items-center gap-2"
+                       :class="{ 'text-gray-700': scrolled, 'text-white': !scrolled }">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                        Sign in
+                    </a>
+                </div>
+
+                <!-- Mobile Actions (Right Side) -->
+                <div class="flex items-center gap-4 md:hidden">
+                    <!-- Account Icon -->
+                    <a href="#" class="transition-colors"
+                       :class="{ 'text-gray-900': scrolled, 'text-white': !scrolled }">
+                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                    </a>
+
+                    <!-- Hamburger Menu -->
+                    <button @click="mobileMenuOpen = !mobileMenuOpen" class="focus:outline-none transition-colors"
+                            :class="{ 'text-gray-900': scrolled, 'text-white': !scrolled }">
+                        <svg x-show="!mobileMenuOpen" class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+                        <svg x-show="mobileMenuOpen" class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" style="display: none;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Mobile Menu Overlay -->
+            <div x-show="mobileMenuOpen" 
+                 x-transition:enter="transition ease-out duration-200"
+                 x-transition:enter-start="opacity-0 -translate-y-2"
+                 x-transition:enter-end="opacity-100 translate-y-0"
+                 x-transition:leave="transition ease-in duration-150"
+                 x-transition:leave-start="opacity-100 translate-y-0"
+                 x-transition:leave-end="opacity-0 -translate-y-2"
+                 class="absolute top-full left-0 w-full bg-white shadow-xl border-t border-gray-100 md:hidden"
+                 style="display: none;">
+                <div class="flex flex-col p-4 space-y-4">
+                    <a href="{{ route('flights') }}" class="flex items-center space-x-3 text-gray-800 font-bold text-lg p-2 rounded-lg hover:bg-gray-50">
+                        <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
+                        <span>Flights</span>
+                    </a>
+                    <a href="{{ route('hotels') }}" class="flex items-center space-x-3 text-gray-800 font-bold text-lg p-2 rounded-lg hover:bg-gray-50">
+                        <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                        <span>Stays</span>
+                    </a>
+                    <a href="{{ route('cars') }}" class="flex items-center space-x-3 text-gray-800 font-bold text-lg p-2 rounded-lg hover:bg-gray-50">
+                        <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
+                        <span>Cars</span>
+                    </a>
+                    <hr class="border-gray-100">
+                    <a href="{{ route('blog') }}" class="text-gray-600 font-semibold text-lg p-2 hover:text-purple-600">Blog</a>
+                    <a href="{{ route('about') }}" class="text-gray-600 font-semibold text-lg p-2 hover:text-purple-600">About</a>
+                    <a href="{{ route('contact') }}" class="text-gray-600 font-semibold text-lg p-2 hover:text-purple-600">Contact</a>
+                    <a href="#" class="text-gray-600 font-semibold text-lg p-2 hover:text-purple-600">Sign In</a>
+                </div>
+            </div>
+        </nav>
+        <div class="relative z-10 max-w-7xl mx-auto px-6 pt-12 pb-32">
+            <!-- Headline -->
+            <div class="text-center mb-8 md:mb-12 animate-fade-up">
+                <h1 class="text-white text-3xl md:text-6xl lg:text-7xl font-black mb-4 md:mb-6 leading-tight tracking-tight drop-shadow-2xl">
+                    Go anywhere,<br>
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-pink-500 drop-shadow-sm">anytime</span>
+                </h1>
+                <p class="text-white/90 text-lg md:text-2xl font-semibold drop-shadow-lg px-4 max-w-2xl mx-auto">
+                    Search hundreds of travel sites at once
+                </p>
+            </div>
+
+            <!-- Unified Search Box (Expedia Style) -->
+            <div class="max-w-5xl mx-auto relative group animate-fade-up px-4 md:px-0" style="animation-delay: 0.2s;" x-data="{ activeTab: 'stays' }">
+                <!-- Glow Effect Behind -->
+                <div class="absolute -inset-1 bg-gradient-to-r from-purple-600 via-pink-500 to-orange-400 rounded-[2.5rem] opacity-20 blur-2xl group-hover:opacity-30 transition duration-1000"></div>
+                
+                <!-- Main Container -->
+                <div class="relative backdrop-blur-xl border border-white/30 rounded-[2rem] shadow-2xl p-4 md:p-8 ring-1 ring-black/5" style="background: linear-gradient(135deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0.3) 100%); backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%);">
+
+                <!-- Premium Pill Tabs with Sliding Indicator -->
+                <div class="flex justify-start md:justify-center mb-6 md:mb-10 overflow-x-auto pb-2 md:pb-0 no-scrollbar px-2 md:px-0" style="-webkit-mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent); mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);">
+                    <div class="inline-flex bg-white/40 backdrop-blur-sm p-1.5 rounded-full shadow-inner border border-white/30 whitespace-nowrap min-w-max">
+                        <button @click="activeTab = 'stays'" 
+                                :class="activeTab === 'stays' ? 'bg-white text-purple-600 shadow-sm ring-1 ring-black/5 scale-105' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50/50'"
+                                class="px-5 md:px-8 py-2.5 md:py-3.5 rounded-full font-bold text-sm md:text-base transition-all duration-300 ease-out flex items-center space-x-2 relative z-10">
+                            <svg class="w-5 h-5 transition-transform duration-300" :class="activeTab === 'stays' ? 'scale-110' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                            <span>Stays</span>
+                        </button>
+                        <button @click="activeTab = 'flights'" 
+                                :class="activeTab === 'flights' ? 'bg-white text-purple-600 shadow-sm ring-1 ring-black/5 scale-105' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50/50'"
+                                class="px-5 md:px-8 py-2.5 md:py-3.5 rounded-full font-bold text-sm md:text-base transition-all duration-300 ease-out flex items-center space-x-2 relative z-10">
+                            <svg class="w-5 h-5 transition-transform duration-300" :class="activeTab === 'flights' ? 'scale-110' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
+                            <span>Flights</span>
+                        </button>
+                        <button @click="activeTab = 'cars'" 
+                                :class="activeTab === 'cars' ? 'bg-white text-purple-600 shadow-sm ring-1 ring-black/5 scale-105' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50/50'"
+                                class="px-5 md:px-8 py-2.5 md:py-3.5 rounded-full font-bold text-sm md:text-base transition-all duration-300 ease-out flex items-center space-x-2 relative z-10">
+                            <svg class="w-5 h-5 transition-transform duration-300" :class="activeTab === 'cars' ? 'scale-110' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
+                            <span>Cars</span>
+                        </button>
+                        <button @click="activeTab = 'packages'" 
+                                :class="activeTab === 'packages' ? 'bg-white text-purple-600 shadow-sm ring-1 ring-black/5 scale-105' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-50/50'"
+                                class="px-5 md:px-8 py-2.5 md:py-3.5 rounded-full font-bold text-sm md:text-base transition-all duration-300 ease-out flex items-center space-x-2 relative z-10">
+                            <svg class="w-5 h-5 transition-transform duration-300" :class="activeTab === 'packages' ? 'scale-110' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                            <span>Packages</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Stays Form -->
+                <div x-show="activeTab === 'stays'" 
+                     x-transition:enter="transition ease-out duration-300"
+                     x-transition:enter-start="opacity-0 transform translate-y-4"
+                     x-transition:enter-end="opacity-100 transform translate-y-0"
+                     x-transition:leave="transition ease-in duration-200"
+                     x-transition:leave-start="opacity-100 transform translate-y-0"
+                     x-transition:leave-end="opacity-0 transform -translate-y-4">
+                    <form action="{{ route('search.hotels') }}" method="GET">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- Destination -->
+                            <div class="relative group">
+                                <label class="block text-gray-700 font-bold mb-2 text-sm ml-1">Going to</label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                        <svg class="h-6 w-6 text-gray-400 group-focus-within:text-purple-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                                    </div>
+                                    <input type="text" name="destination" placeholder="City, hotel, or region" 
+                                           class="w-full pl-12 pr-4 py-4 border-2 border-gray-200 rounded-xl text-lg font-semibold focus:border-purple-500 focus:ring-4 focus:ring-purple-500/20 focus:outline-none transition-all shadow-sm hover:border-gray-300 bg-white/20 focus:bg-white/30">
+                                </div>
+                            </div>
+                            
+                            <!-- Check-in / Check-out -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="relative group">
+                                    <label class="block text-gray-700 font-bold mb-2 text-xs md:text-sm ml-1">Check-in</label>
+                                    <div class="relative">
+                                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                            <svg class="h-6 w-6 text-gray-400 group-focus-within:text-purple-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                        </div>
+                                        <input type="text" name="checkin" placeholder="Select date" readonly
+                                               class="datepicker-input w-full pl-10 md:pl-12 pr-2 md:pr-4 py-3 md:py-4 border-2 border-gray-200 rounded-xl text-sm md:text-base font-semibold focus:border-purple-500 focus:ring-4 focus:ring-purple-500/20 focus:outline-none transition-all shadow-sm hover:border-gray-300 bg-white/20 focus:bg-white/30 cursor-pointer">
+                                    </div>
+                                </div>
+                                <div class="relative group">
+                                    <label class="block text-gray-700 font-bold mb-2 text-xs md:text-sm ml-1">Check-out</label>
+                                    <div class="relative">
+                                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                            <svg class="h-6 w-6 text-gray-400 group-focus-within:text-purple-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                        </div>
+                                        <input type="text" name="checkout" placeholder="Select date" readonly
+                                               class="datepicker-input w-full pl-10 md:pl-12 pr-2 md:pr-4 py-3 md:py-4 border-2 border-gray-200 rounded-xl text-sm md:text-base font-semibold focus:border-purple-500 focus:ring-4 focus:ring-purple-500/20 focus:outline-none transition-all shadow-sm hover:border-gray-300 bg-white/20 focus:bg-white/30 cursor-pointer">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Travelers -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                            <div class="relative group">
+                                <label class="block text-gray-700 font-bold mb-2 text-sm ml-1">Travelers</label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                        <svg class="h-6 w-6 text-gray-400 group-focus-within:text-purple-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                                    </div>
+                                    <select name="travelers" class="w-full pl-12 pr-10 py-4 border-2 border-gray-200 rounded-xl text-lg font-semibold focus:border-purple-500 focus:ring-4 focus:ring-purple-500/20 focus:outline-none appearance-none bg-white/20 focus:bg-white/30 transition-all shadow-sm hover:border-gray-300">
+                                        <option value="1">1 room, 1 traveler</option>
+                                        <option value="2" selected>1 room, 2 travelers</option>
+                                        <option value="3">1 room, 3 travelers</option>
+                                        <option value="4">2 rooms, 4 travelers</option>
+                                        <option value="5">2 rooms, 5+ travelers</option>
+                                    </select>
+                                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500">
+                                        <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="mt-8 w-full md:w-auto bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-black text-xl px-12 py-5 rounded-full shadow-lg shadow-purple-500/30 transition transform hover:-translate-y-0.5 active:translate-y-0">
+                            Search
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Flights Form -->
+                <div x-show="activeTab === 'flights'" 
+                     x-transition:enter="transition ease-out duration-300"
+                     x-transition:enter-start="opacity-0 transform translate-y-4"
+                     x-transition:enter-end="opacity-100 transform translate-y-0"
+                     x-transition:leave="transition ease-in duration-200"
+                     x-transition:leave-start="opacity-100 transform translate-y-0"
+                     x-transition:leave-end="opacity-0 transform -translate-y-4">
+                    <form action="{{ route('search.flights') }}" method="GET">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- Leaving From -->
+                            <div class="relative group">
+                                <label class="block text-gray-700 font-bold mb-2 text-sm ml-1">Leaving from</label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                        <svg class="h-6 w-6 text-gray-400 group-focus-within:text-purple-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 19a2 2 0 01-2-2V7a2 2 0 012-2h4l2 2h4a2 2 0 012 2v1M5 19h14a2 2 0 002-2v-5a2 2 0 00-2-2H9a2 2 0 00-2 2v5a2 2 0 01-2 2z"/></svg>
+                                    </div>
+                                    <input type="text" name="from" placeholder="Airport or city" 
+                                           class="w-full pl-12 pr-4 py-4 border-2 border-gray-200 rounded-xl text-lg font-semibold focus:border-purple-500 focus:ring-4 focus:ring-purple-500/20 focus:outline-none transition-all shadow-sm hover:border-gray-300 bg-white/20 focus:bg-white/30">
+                                </div>
+                            </div>
+
+                            <!-- Going To -->
+                            <div class="relative group">
+                                <label class="block text-gray-700 font-bold mb-2 text-sm ml-1">Going to</label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                        <svg class="h-6 w-6 text-gray-400 group-focus-within:text-purple-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                                    </div>
+                                    <input type="text" name="to" placeholder="Airport or city" 
+                                           class="w-full pl-12 pr-4 py-4 border-2 border-gray-200 rounded-xl text-lg font-semibold focus:border-purple-500 focus:ring-4 focus:ring-purple-500/20 focus:outline-none transition-all shadow-sm hover:border-gray-300 bg-white/20 focus:bg-white/30">
+                                </div>
+                            </div>
+
+                            <!-- Departure / Return Dates -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="relative group">
+                                    <label class="block text-gray-700 font-bold mb-2 text-xs md:text-sm ml-1">Depart</label>
+                                    <div class="relative">
+                                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                            <svg class="h-6 w-6 text-gray-400 group-focus-within:text-purple-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                        </div>
+                                        <input type="text" name="departure" placeholder="Select date" readonly
+                                               class="datepicker-input w-full pl-10 md:pl-12 pr-2 md:pr-4 py-3 md:py-4 border-2 border-gray-200 rounded-xl text-sm md:text-base font-semibold focus:border-purple-500 focus:ring-4 focus:ring-purple-500/20 focus:outline-none transition-all shadow-sm hover:border-gray-300 bg-white/20 focus:bg-white/30 cursor-pointer">
+                                    </div>
+                                </div>
+                                <div class="relative group">
+                                    <label class="block text-gray-700 font-bold mb-2 text-xs md:text-sm ml-1">Return</label>
+                                    <div class="relative">
+                                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                            <svg class="h-6 w-6 text-gray-400 group-focus-within:text-purple-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                        </div>
+                                        <input type="text" name="return" placeholder="Select date" readonly
+                                               class="datepicker-input w-full pl-10 md:pl-12 pr-2 md:pr-4 py-3 md:py-4 border-2 border-gray-200 rounded-xl text-sm md:text-base font-semibold focus:border-purple-500 focus:ring-4 focus:ring-purple-500/20 focus:outline-none transition-all shadow-sm hover:border-gray-300 bg-white/20 focus:bg-white/30 cursor-pointer">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Travelers -->
+                            <div class="relative group">
+                                <label class="block text-gray-700 font-bold mb-2 text-sm ml-1">Travelers</label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                        <svg class="h-6 w-6 text-gray-400 group-focus-within:text-purple-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+                                    </div>
+                                    <select name="travelers" class="w-full pl-12 pr-10 py-4 border-2 border-gray-200 rounded-xl text-lg font-semibold focus:border-purple-500 focus:ring-4 focus:ring-purple-500/20 focus:outline-none appearance-none bg-white/20 focus:bg-white/30 transition-all shadow-sm hover:border-gray-300">
+                                        <option value="1" selected>1 traveler</option>
+                                        <option value="2">2 travelers</option>
+                                        <option value="3">3 travelers</option>
+                                        <option value="4">4 travelers</option>
+                                        <option value="5">5+ travelers</option>
+                                    </select>
+                                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500">
+                                        <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Class (Full Width) -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                            <div class="relative group">
+                                <label class="block text-gray-700 font-bold mb-2 text-sm ml-1">Class</label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                        <svg class="h-6 w-6 text-gray-400 group-focus-within:text-purple-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
+                                    </div>
+                                    <select name="class" class="w-full pl-12 pr-10 py-4 border-2 border-gray-200 rounded-xl text-lg font-semibold focus:border-purple-500 focus:ring-4 focus:ring-purple-500/20 focus:outline-none appearance-none bg-white/20 focus:bg-white/30 transition-all shadow-sm hover:border-gray-300">
+                                        <option value="economy" selected>Economy</option>
+                                        <option value="premium">Premium Economy</option>
+                                        <option value="business">Business Class</option>
+                                        <option value="first">First Class</option>
+                                    </select>
+                                    <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500">
+                                        <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="mt-8 w-full md:w-auto bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-black text-xl px-12 py-5 rounded-full shadow-lg shadow-purple-500/30 transition transform hover:-translate-y-0.5 active:translate-y-0">
+                            Search flights
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Cars Form -->
+                <div x-show="activeTab === 'cars'" 
+                     x-transition:enter="transition ease-out duration-300"
+                     x-transition:enter-start="opacity-0 transform translate-y-4"
+                     x-transition:enter-end="opacity-100 transform translate-y-0"
+                     x-transition:leave="transition ease-in duration-200"
+                     x-transition:leave-start="opacity-100 transform translate-y-0"
+                     x-transition:leave-end="opacity-0 transform -translate-y-4">
+                    <form action="{{ route('search.cars') }}" method="GET">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="relative group">
+                                <label class="block text-gray-700 font-bold mb-2 text-sm ml-1">Pick-up location</label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                        <svg class="h-6 w-6 text-gray-400 group-focus-within:text-purple-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                                    </div>
+                                    <input type="text" name="pickup-location" placeholder="City, airport, or address" 
+                                           class="w-full pl-12 pr-4 py-4 border-2 border-gray-200 rounded-xl text-lg font-semibold focus:border-purple-500 focus:ring-4 focus:ring-purple-500/20 focus:outline-none transition-all shadow-sm hover:border-gray-300 bg-white/20 focus:bg-white/30">
+                                </div>
+                            </div>
+                            <div class="relative group">
+                                <label class="block text-gray-700 font-bold mb-2 text-sm ml-1">Drop-off location</label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                        <svg class="h-6 w-6 text-gray-400 group-focus-within:text-purple-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                                    </div>
+                                    <input type="text" name="dropoff-location" placeholder="Same as pick-up" 
+                                           class="w-full pl-12 pr-4 py-4 border-2 border-gray-200 rounded-xl text-lg font-semibold focus:border-purple-500 focus:ring-4 focus:ring-purple-500/20 focus:outline-none transition-all shadow-sm hover:border-gray-300 bg-white/20 focus:bg-white/30">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                            <div class="relative group">
+                                <label class="block text-gray-700 font-bold mb-2 text-xs md:text-sm ml-1">Pick-up date</label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                        <svg class="h-6 w-6 text-gray-400 group-focus-within:text-purple-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                    </div>
+                                    <input type="text" name="pickup-date" placeholder="Select date" readonly
+                                           class="datepicker-input w-full pl-10 md:pl-12 pr-2 md:pr-4 py-3 md:py-4 border-2 border-gray-200 rounded-xl text-sm md:text-base font-semibold focus:border-purple-500 focus:ring-4 focus:ring-purple-500/20 focus:outline-none transition-all shadow-sm hover:border-gray-300 bg-white/20 focus:bg-white/30 cursor-pointer">
+                                </div>
+                            </div>
+                            <div class="relative group">
+                                <label class="block text-gray-700 font-bold mb-2 text-xs md:text-sm ml-1">Drop-off date</label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                        <svg class="h-6 w-6 text-gray-400 group-focus-within:text-purple-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                    </div>
+                                    <input type="text" name="dropoff-date" placeholder="Select date" readonly
+                                           class="datepicker-input w-full pl-10 md:pl-12 pr-2 md:pr-4 py-3 md:py-4 border-2 border-gray-200 rounded-xl text-sm md:text-base font-semibold focus:border-purple-500 focus:ring-4 focus:ring-purple-500/20 focus:outline-none transition-all shadow-sm hover:border-gray-300 bg-white/20 focus:bg-white/30 cursor-pointer">
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="mt-8 w-full md:w-auto bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-black text-xl px-12 py-5 rounded-full shadow-lg shadow-purple-500/30 transition transform hover:-translate-y-0.5 active:translate-y-0">
+                            Search cars
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Packages Form (Intelligent Bundling) -->
+                <div x-show="activeTab === 'packages'" 
+                     x-transition:enter="transition ease-out duration-300"
+                     x-transition:enter-start="opacity-0 transform translate-y-4"
+                     x-transition:enter-end="opacity-100 transform translate-y-0"
+                     x-transition:leave="transition ease-in duration-200"
+                     x-transition:leave-start="opacity-100 transform translate-y-0"
+                     x-transition:leave-end="opacity-0 transform -translate-y-4"
+                     x-data="{ 
+                    bundleFlight: true, 
+                    bundleHotel: true, 
+                    bundleCar: false 
+                }">
+                    <form action="{{ route('search.packages') }}" method="GET">
+                        <!-- Bundle Selection (Pills) -->
+                        <div class="mb-6">
+                            <label class="block text-gray-700 font-bold mb-3 text-sm uppercase tracking-wide ml-1">Bundle & Save</label>
+                            <div class="flex flex-wrap gap-3">
+                                <button type="button" @click="bundleFlight = !bundleFlight" 
+                                        :class="bundleFlight ? 'bg-purple-600 text-white border-purple-600 shadow-md' : 'bg-white text-gray-600 border-gray-200 hover:border-purple-400 hover:bg-gray-50'"
+                                        class="px-6 py-2.5 rounded-full border-2 font-bold text-sm transition-all flex items-center space-x-2">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
+                                    <span>Flight</span>
+                                </button>
+                                <button type="button" @click="bundleHotel = !bundleHotel" 
+                                        :class="bundleHotel ? 'bg-purple-600 text-white border-purple-600 shadow-md' : 'bg-white text-gray-600 border-gray-200 hover:border-purple-400 hover:bg-gray-50'"
+                                        class="px-6 py-2.5 rounded-full border-2 font-bold text-sm transition-all flex items-center space-x-2">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                                    <span>Hotel</span>
+                                </button>
+                                <button type="button" @click="bundleCar = !bundleCar" 
+                                        :class="bundleCar ? 'bg-purple-600 text-white border-purple-600 shadow-md' : 'bg-white text-gray-600 border-gray-200 hover:border-purple-400 hover:bg-gray-50'"
+                                        class="px-6 py-2.5 rounded-full border-2 font-bold text-sm transition-all flex items-center space-x-2">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
+                                    <span>Car</span>
+                                </button>
+                            </div>
+                            <!-- Hidden inputs for form submission -->
+                            <input type="hidden" name="include_flight" :value="bundleFlight ? 1 : 0">
+                            <input type="hidden" name="include_hotel" :value="bundleHotel ? 1 : 0">
+                            <input type="hidden" name="include_car" :value="bundleCar ? 1 : 0">
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="relative group" x-show="bundleFlight" x-transition>
+                                <label class="block text-gray-700 font-bold mb-2 text-sm ml-1">Leaving from</label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                        <svg class="h-6 w-6 text-gray-400 group-focus-within:text-purple-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 19a2 2 0 01-2-2V7a2 2 0 012-2h4l2 2h4a2 2 0 012 2v1M5 19h14a2 2 0 002-2v-5a2 2 0 00-2-2H9a2 2 0 00-2 2v5a2 2 0 01-2 2z"/></svg>
+                                    </div>
+                                    <input type="text" name="from" placeholder="Airport or city" 
+                                           class="w-full pl-12 pr-4 py-4 border-2 border-gray-200 rounded-xl text-lg font-semibold focus:border-purple-500 focus:ring-4 focus:ring-purple-500/20 focus:outline-none transition-all shadow-sm hover:border-gray-300 bg-white/20 focus:bg-white/30">
+                                </div>
+                            </div>
+                            <div class="relative group" :class="{'md:col-span-2': !bundleFlight}">
+                                <label class="block text-gray-700 font-bold mb-2 text-sm ml-1">Going to</label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                        <svg class="h-6 w-6 text-gray-400 group-focus-within:text-purple-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                                    </div>
+                                    <input type="text" name="to" placeholder="Destination" 
+                                           class="w-full pl-12 pr-4 py-4 border-2 border-gray-200 rounded-xl text-lg font-semibold focus:border-purple-500 focus:ring-4 focus:ring-purple-500/20 focus:outline-none transition-all shadow-sm hover:border-gray-300 bg-white/20 focus:bg-white/30">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                            <div class="relative group">
+                                <label class="block text-gray-700 font-bold mb-2 text-xs md:text-sm ml-1">Depart</label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                        <svg class="h-6 w-6 text-gray-400 group-focus-within:text-purple-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                    </div>
+                                    <input type="text" name="departure" placeholder="Select date" readonly
+                                           class="datepicker-input w-full pl-10 md:pl-12 pr-2 md:pr-4 py-3 md:py-4 border-2 border-gray-200 rounded-xl text-sm md:text-base font-semibold focus:border-purple-500 focus:ring-4 focus:ring-purple-500/20 focus:outline-none transition-all shadow-sm hover:border-gray-300 bg-white/20 focus:bg-white/30 cursor-pointer">
+                                </div>
+                            </div>
+                            <div class="relative group">
+                                <label class="block text-gray-700 font-bold mb-2 text-xs md:text-sm ml-1">Return</label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                                        <svg class="h-6 w-6 text-gray-400 group-focus-within:text-purple-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                    </div>
+                                    <input type="text" name="return" placeholder="Select date" readonly
+                                           class="datepicker-input w-full pl-10 md:pl-12 pr-2 md:pr-4 py-3 md:py-4 border-2 border-gray-200 rounded-xl text-sm md:text-base font-semibold focus:border-purple-500 focus:ring-4 focus:ring-purple-500/20 focus:outline-none transition-all shadow-sm hover:border-gray-300 bg-white/20 focus:bg-white/30 cursor-pointer">
+                                </div>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="mt-8 w-full md:w-auto bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-black text-xl px-12 py-5 rounded-full shadow-lg shadow-purple-500/30 transition transform hover:-translate-y-0.5 active:translate-y-0">
+                            Search packages
+                        </button>
+                    </form>
+                </div>
+                </div> <!-- Close inner container -->
+            </div> <!-- Close outer container with glow -->
+        </div>
+    </div>
+</div>
+
+    <!-- Top Flight Deals Section -->
+    <div class="py-20 bg-gradient-to-b from-white to-gray-50">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-5xl font-semibold text-gray-900 mb-4">✈️ Top Flight Deals</h2>
+                <p class="text-lg md:text-xl text-gray-600">Great deals on popular routes. Search now and compare prices!</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                @foreach([
+                    ['from' => 'New York', 'to' => 'London', 'airline' => 'Multiple Airlines', 'date' => 'Dec 15 - Dec 22'],
+                    ['from' => 'Los Angeles', 'to' => 'Tokyo', 'airline' => 'Multiple Airlines', 'date' => 'Jan 10 - Jan 20'],
+                    ['from' => 'Miami', 'to' => 'Dubai', 'airline' => 'Multiple Airlines', 'date' => 'Dec 20 - Jan 5'],
+                    ['from' => 'San Francisco', 'to' => 'Paris', 'airline' => 'Multiple Airlines', 'date' => 'Jan 15 - Jan 25']
+                ] as $deal)
+                <div class="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden group hover:-translate-y-1">
+                    <div class="bg-gradient-to-r from-purple-600 to-pink-600 p-4 text-white">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-sm font-bold opacity-90">{{ $deal['airline'] }}</span>
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a8 8 0 100 16 8 8 0 000-16zM8.5 9.5L7 11l4 4 6-6-1.5-1.5L11 12 8.5 9.5z"/></svg>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-xs opacity-75">From</p>
+                                <p class="text-2xl font-black">{{ $deal['from'] }}</p>
+                            </div>
+                            <svg class="w-8 h-8 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                            <div class="text-right">
+                                <p class="text-xs opacity-75">To</p>
+                                <p class="text-2xl font-black">{{ $deal['to'] }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="p-6">
+                        <div class="mb-4">
+                            <p class="text-xs text-gray-500 uppercase tracking-wide mb-1">Travel Dates</p>
+                            <p class="text-sm font-semibold text-gray-700">{{ $deal['date'] }}</p>
+                        </div>
+                        <div class="flex items-end justify-between mb-4">
+                            <div>
+                                <p class="text-xs text-gray-500">Estimated Price</p>
+                                <p class="text-xl font-black text-purple-600">Check Availability</p>
+                            </div>
+                            <div class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-xs font-bold">
+                                POPULAR
+                            </div>
+                        </div>
+                        <a href="{{ route('search.flights', ['from' => $deal['from'], 'to' => $deal['to']]) }}" class="block w-full text-center bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-4 rounded-lg transition shadow-md hover:shadow-lg">
+                            Check Prices
+                        </a>
+                    </div>
+                </div>
+                @endforeach
+            </div>
+
+            <div class="text-center mt-12">
+                <a href="{{ route('flights') }}" class="inline-flex items-center space-x-2 bg-gray-900 hover:bg-black text-white font-bold py-4 px-8 rounded-full transition shadow-lg">
+                    <span>Explore All Flight Deals</span>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Trending Destinations -->
+    <div class="py-20 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-6">
+            <h2 class="text-3xl md:text-5xl font-semibold text-gray-900 mb-12">Trending destinations</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                @foreach([
+                    ['city' => 'London', 'country' => 'United Kingdom', 'img' => 'photo-1513635269975-59663e0ac1ad', 'route' => 'nyc-lon'],
+                    ['city' => 'Paris', 'country' => 'France', 'img' => 'photo-1502602898657-3e91760cbb34', 'route' => 'lax-par'],
+                    ['city' => 'Dubai', 'country' => 'UAE', 'img' => 'photo-1512453979798-5ea266f8880c', 'route' => 'nyc-dxb'],
+                    ['city' => 'Tokyo', 'country' => 'Japan', 'img' => 'photo-1540959733332-eab4deabeeaf', 'route' => 'nyc-tyo']
+                ] as $dest)
+                <a href="{{ route('routes.show', $dest['route']) }}" class="group relative h-[450px] rounded-3xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-2">
+                    <img src="https://images.unsplash.com/{{ $dest['img'] }}?w=800&h=1200&fit=crop" 
+                         class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000">
+                    
+                    <!-- Gradient Overlay -->
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity"></div>
+
+                    <!-- Top Badge -->
+                    <div class="absolute top-4 right-4 bg-white/90 backdrop-blur-md px-3 py-1 rounded-full text-xs font-bold text-blue-900 shadow-sm">
+                        Flight + Hotel
+                    </div>
+
+                    <!-- Floating Glass Content -->
+                    <div class="absolute bottom-4 left-4 right-4 bg-white/10 backdrop-blur-md border border-white/20 p-5 rounded-2xl shadow-lg group-hover:bg-white/20 transition-colors">
+                        <div class="flex justify-between items-end">
+                            <div>
+                                <p class="text-white/80 text-xs font-bold uppercase tracking-wider mb-1">{{ $dest['country'] }}</p>
+                                <h3 class="text-white text-3xl font-black leading-none">{{ $dest['city'] }}</h3>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-white text-sm font-bold bg-white/20 px-3 py-1.5 rounded-lg backdrop-blur-sm">View Deal</span>
+                            </div>
+                        </div>
+                    </div>
+                </a>
+                @endforeach
+            </div>
+        </div>
+    </div>
+    <!-- Why Use TravelHybrid -->
+    <div class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-5xl font-semibold text-gray-900 mb-4">Why Use TravelHybrid?</h2>
+                <p class="text-lg md:text-xl text-gray-600">We make travel simple, transparent, and affordable.</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
+                <div class="text-center p-6 rounded-2xl hover:bg-purple-50 transition group">
+                    <div class="w-20 h-20 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition">
+                        <svg class="w-10 h-10 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">Find Great Deals</h3>
+                    <p class="text-gray-600">Compare hundreds of sites instantly. We find you unbeatable deals every time.</p>
+                </div>
+
+                <div class="text-center p-6 rounded-2xl hover:bg-purple-50 transition group">
+                    <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition">
+                        <svg class="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">100% Safe & Secure</h3>
+                    <p class="text-gray-600">All bookings protected by our trusted partners. Your data is always encrypted.</p>
+                </div>
+
+                <div class="text-center p-6 rounded-2xl hover:bg-purple-50 transition group">
+                    <div class="w-20 h-20 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition">
+                        <svg class="w-10 h-10 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">Lightning Fast Search</h3>
+                    <p class="text-gray-600">Get results in seconds. Our smart engine scans millions of options instantly.</p>
+                </div>
+
+                <div class="text-center p-6 rounded-2xl hover:bg-purple-50 transition group">
+                    <div class="w-20 h-20 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition">
+                        <svg class="w-10 h-10 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">24/7 Support</h3>
+                    <p class="text-gray-600">Questions? Our support team is ready to help you anytime, anywhere.</p>
+                </div>
+            </div>
+
+            <!-- Stats -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-8 mt-16 pt-16 border-t border-gray-200">
+                <div class="text-center">
+                    <p class="text-5xl font-black text-purple-600 mb-2">500+</p>
+                    <p class="text-gray-600 font-semibold">Travel Sites Searched</p>
+                </div>
+                <div class="text-center">
+                    <p class="text-5xl font-black text-purple-600 mb-2">200+</p>
+                    <p class="text-gray-600 font-semibold">Countries Covered</p>
+                </div>
+                <div class="text-center">
+                    <p class="text-5xl font-black text-purple-600 mb-2">24/7</p>
+                    <p class="text-gray-600 font-semibold">Instant Search</p>
+                </div>
+                <div class="text-center">
+                    <p class="text-5xl font-black text-purple-600 mb-2">100%</p>
+                    <p class="text-gray-600 font-semibold">Free to Use</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Travel Inspiration Section -->
+    <div class="py-20 bg-gradient-to-b from-gray-50 to-white">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="flex justify-between items-end mb-12">
+                <div>
+                    <h2 class="text-5xl font-semibold text-gray-900 mb-4">📰 Travel Inspiration</h2>
+                    <p class="text-xl text-gray-600">Expert tips, destination guides, and travel hacks</p>
+                </div>
+                <a href="{{ route('blog') }}" class="hidden md:inline-flex items-center space-x-2 text-purple-600 hover:text-purple-700 font-bold">
+                    <span>View All Articles</span>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+                </a>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <a href="{{ route('blog.save-money-flights') }}" class="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all hover:-translate-y-2">
+                    <div class="h-56 bg-gradient-to-br from-purple-500 to-purple-700 relative overflow-hidden">
+                        <div class="absolute inset-0 bg-black/20"></div>
+                        <div class="absolute bottom-4 left-4 right-4">
+                            <span class="inline-block bg-yellow-400 text-gray-900 text-xs font-bold px-3 py-1 rounded-full uppercase mb-2">Tips & Tricks</span>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-2xl font-bold text-gray-900 mb-3 group-hover:text-purple-600 transition">10 Ways to Save Money on Flights</h3>
+                        <p class="text-gray-600 mb-4 leading-relaxed">Discover insider secrets to booking cheaper flights and maximizing your travel budget...</p>
+                        <div class="flex items-center text-sm text-gray-500">
+                            <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/></svg>
+                            5 min read
+                        </div>
+                    </div>
+                </a>
+
+                <a href="{{ route('blog.london-guide') }}" class="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all hover:-translate-y-2">
+                    <div class="h-56 bg-gradient-to-br from-pink-500 to-orange-500 relative overflow-hidden">
+                        <div class="absolute inset-0 bg-black/20"></div>
+                        <div class="absolute bottom-4 left-4 right-4">
+                            <span class="inline-block bg-green-400 text-gray-900 text-xs font-bold px-3 py-1 rounded-full uppercase mb-2">City Guide</span>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-2xl font-bold text-gray-900 mb-3 group-hover:text-purple-600 transition">Ultimate London Travel Guide</h3>
+                        <p class="text-gray-600 mb-4 leading-relaxed">From Big Ben to hidden gems, explore everything London has to offer with our complete guide...</p>
+                        <div class="flex items-center text-sm text-gray-500">
+                            <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/></svg>
+                            8 min read
+                        </div>
+                    </div>
+                </a>
+
+                <a href="{{ route('blog') }}" class="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all hover:-translate-y-2">
+                    <div class="h-56 bg-gradient-to-br from-orange-500 to-orange-700 relative overflow-hidden">
+                        <div class="absolute inset-0 bg-black/20"></div>
+                        <div class="absolute bottom-4 left-4 right-4">
+                            <span class="inline-block bg-blue-400 text-gray-900 text-xs font-bold px-3 py-1 rounded-full uppercase mb-2">Budget Travel</span>
+                        </div>
+                    </div>
+
+                    <div class="p-6">
+                        <h3 class="text-2xl font-bold text-gray-900 mb-3 group-hover:text-purple-600 transition">Travel Europe on a Budget</h3>
+                        <p class="text-gray-600 mb-4 leading-relaxed">Experience Europe without breaking the bank. Our guide to affordable European adventures...</p>
+                        <div class="flex items-center text-sm text-gray-500">
+                            <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/></svg>
+                            6 min read
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="text-center mt-12 md:hidden">
+                <a href="{{ route('blog') }}" class="inline-flex items-center space-x-2 bg-purple-600 hover:bg-purple-700 text-white font-bold py-4 px-8 rounded-full transition shadow-lg">
+                    <span>View All Articles</span>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+                </a>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Newsletter CTA Section -->
+    <div class="relative py-24 overflow-hidden">
+        <!-- Gradient Background -->
+        <div class="absolute inset-0 bg-gradient-to-br from-purple-600 via-pink-600 to-orange-500"></div>
+        
+        <!-- Animated Background Pattern -->
+        <div class="absolute inset-0 opacity-10">
+            <div class="absolute top-0 -left-4 w-72 h-72 bg-pink-300 rounded-full mix-blend-multiply filter blur-xl animate-blob"></div>
+            <div class="absolute top-0 -right-4 w-72 h-72 bg-yellow-300 rounded-full mix-blend-multiply filter blur-xl animate-blob animation-delay-2000"></div>
+            <div class="absolute -bottom-8 left-20 w-72 h-72 bg-blue-300 rounded-full mix-blend-multiply filter blur-xl animate-blob animation-delay-4000"></div>
+        </div>
+
+        <div class="relative max-w-4xl mx-auto px-6 text-center">
+            <span class="inline-block bg-white/20 backdrop-blur-sm text-white px-4 py-2 rounded-full text-sm font-bold mb-6 uppercase tracking-wide">
+                🔔 Never Miss a Deal
+            </span>
+            <h2 class="text-5xl md:text-6xl font-semibold text-white mb-6 leading-tight">
+                Get Exclusive Travel Deals<br>Delivered to Your Inbox
+            </h2>
+            <p class="text-xl text-blue-100 mb-10 max-w-2xl mx-auto leading-relaxed">
+                Join over 500,000 smart travelers. Be the first to know about flash sales, secret deals, and insider travel tips.
+            </p>
+
+            <form class="max-w-xl mx-auto">
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <input 
+                        type="email" 
+                        placeholder="Enter your email address" 
+                        class="flex-1 px-6 py-5 rounded-full text-lg font-semibold focus:outline-none focus:ring-4 focus:ring-white/50 shadow-2xl"
+                    >
+                    <button 
+                        type="submit" 
+                        class="bg-yellow-400 hover:bg-yellow-500 text-gray-900 font-black text-lg px-10 py-5 rounded-full shadow-2xl transition transform hover:scale-105 hover:-translate-y-1 active:scale-100"
+                    >
+                        Subscribe Free
+                    </button>
+                </div>
+                <p class="text-blue-100 text-sm mt-4 opacity-75">
+                    ✓ No spam, ever. ✓ Unsubscribe anytime. ✓ 100% free.
+                </p>
+            </form>
+
+            <!-- Trust Indicators -->
+            <div class="mt-12 flex items-center justify-center space-x-8 text-white/90">
+                <div class="flex items-center space-x-2">
+                    <svg class="w-6 h-6 text-green-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+                    <span class="font-semibold">100% Free</span>
+                </div>
+                <div class="hidden sm:flex items-center space-x-2">
+                    <svg class="w-6 h-6 text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/></svg>
+                    <span class="font-semibold">Curated Offers</span>
+                </div>
+                <div class="hidden sm:flex items-center space-x-2">
+                    <svg class="w-6 h-6 text-purple-300" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd"/></svg>
+                    <span class="font-semibold">Instant Updates</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        @keyframes blob {
+            0% { transform: translate(0px, 0px) scale(1); }
+            33% { transform: translate(30px, -50px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+            100% { transform: translate(0px, 0px) scale(1); }
+        }
+        .animate-blob {
+            animation: blob 7s infinite;
+        }
+        .animation-delay-2000 {
+            animation-delay: 2s;
+        }
+        .animation-delay-4000 {
+            animation-delay: 4s;
+        }
+    </style>
+
+
+
+    <!-- Mobile App Teaser Section -->
+    <div class="py-16 bg-gradient-to-br from-purple-50 via-white to-pink-50 border-t border-b border-gray-100">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="flex flex-col lg:flex-row items-center gap-12">
+                <!-- Left: Content -->
+                <div class="flex-1 text-center lg:text-left">
+                    <div class="inline-block bg-purple-100 text-purple-600 text-xs font-bold px-4 py-2 rounded-full uppercase tracking-wider mb-4">
+                        Coming Soon
+                    </div>
+                    <h2 class="text-3xl md:text-4xl font-black text-gray-900 mb-4">
+                        Search Smarter with the TravelHybrid App
+                    </h2>
+                    <p class="text-lg text-gray-600 mb-6 leading-relaxed max-w-xl">
+                        Book on the go and manage your trips effortlessly. Get instant notifications on price drops, exclusive mobile deals, and seamless travel planning—all in your pocket.
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-8">
+                        <div class="flex items-center gap-3 bg-white px-5 py-3 rounded-xl shadow-sm border border-gray-100">
+                            <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>
+                            <span class="text-sm font-semibold text-gray-700">iOS & Android</span>
+                        </div>
+                        <div class="flex items-center gap-3 bg-white px-5 py-3 rounded-xl shadow-sm border border-gray-100">
+                            <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+                            <span class="text-sm font-semibold text-gray-700">Price Alerts</span>
+                        </div>
+                    </div>
+                    <p class="text-sm text-gray-500 italic">Be the first to know when we launch. Stay tuned!</p>
+                </div>
+
+                <!-- Right: QR Code Placeholder -->
+                <div class="flex-shrink-0">
+                    <div class="bg-white rounded-3xl shadow-xl p-8 border border-gray-200 text-center">
+                        <p class="text-sm font-bold text-gray-600 uppercase tracking-wider mb-4">Scan to Get Notified</p>
+                        <!-- QR Code Placeholder -->
+                        <div class="w-40 h-40 mx-auto bg-gradient-to-br from-purple-100 to-pink-100 rounded-2xl flex items-center justify-center mb-4">
+                            <svg class="w-32 h-32 text-purple-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/>
+                            </svg>
+                        </div>
+                        <p class="text-xs text-gray-400">QR code available at launch</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Footer -->
+    <footer class="bg-[#0a0a0a] text-white pt-24 pb-12 border-t border-white/10">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 mb-16">
+                <div class="lg:col-span-2">
+                    <a href="/" class="text-3xl font-black tracking-tighter text-white mb-6 block">
+                        TravelHybrid<span class="text-white0">.</span>
+                    </a>
+                    <p class="text-gray-400 text-lg leading-relaxed mb-8 max-w-sm">
+                        Experience the world's best travel search engine. We combine hundreds of sites to find you the perfect deal, every time.
+                    </p>
+                    <div class="flex space-x-6">
+                        <a href="#" class="text-gray-400 hover:text-white transition transform hover:scale-110">
+                            <span class="sr-only">Twitter</span>
+                            <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24"><path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84"/></svg>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition transform hover:scale-110">
+                            <span class="sr-only">Instagram</span>
+                            <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24"><path fill-rule="evenodd" d="M12.315 2c2.43 0 2.784.013 3.808.06 1.064.049 1.791.218 2.427.465a4.902 4.902 0 011.772 1.153 4.902 4.902 0 011.153 1.772c.247.636.416 1.363.465 2.427.048 1.067.06 1.407.06 4.123v.08c0 2.643-.012 2.987-.06 4.043-.049 1.064-.218 1.791-.465 2.427a4.902 4.902 0 01-1.153 1.772 4.902 4.902 0 01-1.772 1.153c-.636.247-1.363.416-2.427.465-1.067.048-1.407.06-4.123.06h-.08c-2.643 0-2.987-.012-4.043-.06-1.064-.049-1.791-.218-2.427-.465a4.902 4.902 0 01-1.772-1.153 4.902 4.902 0 01-1.153-1.772c-.247-.636-.416-1.363-.465-2.427-.047-1.024-.06-1.379-.06-3.808v-.63c0-2.43.013-2.784.06-3.808.049-1.064.218-1.791.465-2.427a4.902 4.902 0 011.153-1.772A4.902 4.902 0 015.468 2.53c.636-.247 1.363-.416 2.427-.465C8.901 2.013 9.256 2 11.685 2h.63zm-.081 1.802h-.468c-2.456 0-2.784.011-3.807.058-.975.045-1.504.207-1.857.344-.467.182-.8.398-1.15.748-.35.35-.566.683-.748 1.15-.137.353-.3.882-.344 1.857-.047 1.023-.058 1.351-.058 3.807v.468c0 2.456.011 2.784.058 3.807.045.975.207 1.504.344 1.857.182.466.399.8.748 1.15.35.35.683.566 1.15.748.353.137.882.3 1.857.344 1.054.048 1.37.058 4.041.058h.08c2.597 0 2.917-.01 3.96-.058.976-.045 1.505-.207 1.858-.344.466-.182.8-.398 1.15-.748.35-.35.566-.683.748-1.15.137-.353.3-.882.344-1.857.048-1.055.058-1.37.058-4.041v-.08c0-2.597-.01-2.917-.058-3.96-.045-.976-.207-1.505-.344-1.858a3.097 3.097 0 00-.748-1.15 3.098 3.098 0 00-1.15-.748c-.353-.137-.882-.3-1.857-.344-1.023-.047-1.351-.058-3.807-.058zM12 6.865a5.135 5.135 0 110 10.27 5.135 5.135 0 010-10.27zm0 1.802a3.333 3.333 0 100 6.666 3.333 3.333 0 000-6.666zm5.338-3.205a1.2 1.2 0 110 2.4 1.2 1.2 0 010-2.4z" clip-rule="evenodd" /></svg>
+                        </a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h4 class="font-bold text-white text-lg mb-6">Company</h4>
+                    <ul class="space-y-4">
+                        <li><a href="{{ route('about') }}" class="text-gray-400 hover:text-white transition">About Us</a></li>
+                        <li><a href="{{ route('blog') }}" class="text-gray-400 hover:text-white transition">Travel Blog</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Careers</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition">Press</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-bold text-white text-lg mb-6">Support</h4>
+                    <ul class="space-y-4">
+                        <li><a href="{{ route('contact') }}" class="text-gray-400 hover:text-white transition">Contact Us</a></li>
+                        <li><a href="{{ route('faq') }}" class="text-gray-400 hover:text-white transition">FAQ</a></li>
+                        <li><a href="{{ route('terms') }}" class="text-gray-400 hover:text-white transition">Terms of Service</a></li>
+                        <li><a href="{{ route('privacy') }}" class="text-gray-400 hover:text-white transition">Privacy Policy</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="font-bold text-white text-lg mb-6">Mobile App</h4>
+                    <p class="text-gray-400 text-sm mb-4">Get exclusive deals on our app.</p>
+                    <div class="space-y-3">
+                        <button disabled class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 flex items-center cursor-not-allowed opacity-60 relative group">
+                            <div class="absolute -top-2 -right-2 bg-purple-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">SOON</div>
+                            <svg class="w-6 h-6 mr-3 opacity-50" fill="currentColor" viewBox="0 0 24 24"><path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.78 1.18-.19 2.31-.89 3.51-.84 1.54.06 2.74.79 3.45 1.84-2.88 1.63-2.39 5.84.56 7.1-.59 1.68-1.4 3.32-2.6 4.09zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/></svg>
+                            <div class="text-left opacity-50">
+                                <div class="text-xs text-gray-400">Download on the</div>
+                                <div class="text-sm font-bold">App Store</div>
+                            </div>
+                        </button>
+                        <button disabled class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 flex items-center cursor-not-allowed opacity-60 relative group">
+                            <div class="absolute -top-2 -right-2 bg-purple-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">SOON</div>
+                            <svg class="w-6 h-6 mr-3 opacity-50" fill="currentColor" viewBox="0 0 24 24"><path d="M3.609 1.814L13.792 12 1.5 24.19C.536 23.273 0 21.662 0 18.782V5.18c0-1.618.236-2.898.782-3.366zm12.398 12.398l3.75 3.75-2.06 1.165c-1.125.638-2.25.638-3.375 0l-1.5-1.125 3.185-3.79zM19.5 17.25c.563.315 1.125.315 1.688 0L24 15.75l-4.5-4.5-1.875 1.875 1.875 4.125zM1.5 1.814c1.125-.638 2.25-.638 3.375 0l11.134 11.134-3.186 3.79-11.323-14.924z"/></svg>
+                            <div class="text-left opacity-50">
+                                <div class="text-xs text-gray-400">Get it on</div>
+                                <div class="text-sm font-bold">Google Play</div>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Affiliate Disclaimer -->
+            <div class="border-t border-white/10 pt-8 pb-8">
+                <div class="bg-white/5 border border-white/10 rounded-xl p-6">
+                    <h4 class="text-white font-bold text-lg mb-3">📋 Affiliate & Booking Disclaimer</h4>
+                    <p class="text-gray-400 text-sm leading-relaxed mb-3">
+                        <strong>TravelHybrid</strong> is a travel search and comparison platform. We do not provide travel bookings, ticketing, payments, or customer support services directly. All bookings are made through our trusted affiliate partners.
+                    </p>
+                    <p class="text-gray-400 text-sm leading-relaxed">
+                        Prices, availability, booking terms, customer service, refunds, and cancellations are handled solely by the respective travel provider. TravelHybrid may receive a commission at no extra cost to you when you complete a booking through our affiliate partners.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center text-gray-500 text-sm">
+                <p>&copy; {{ date('Y') }} TravelHybrid. All rights reserved.</p>
+                <div class="flex space-x-6 mt-4 md:mt-0">
+                    <a href="{{ route('privacy') }}" class="hover:text-white transition">Privacy</a>
+                    <a href="{{ route('terms') }}" class="hover:text-white transition">Terms</a>
+                    <a href="{{ route('faq') }}" class="hover:text-white transition">FAQ</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <script>
+        // Initialize Flatpickr
+        document.addEventListener('DOMContentLoaded', function() {
+            flatpickr(".datepicker-input", {
+                dateFormat: "Y-m-d",
+                minDate: "today",
+                disableMobile: "true"
+            });
+
+            // Hero Background Rotation
+            const backgrounds = document.querySelectorAll('.hero-bg');
+            let current = 0;
+            
+            if(backgrounds.length > 0) {
+                // Ensure first image is visible
+                backgrounds[0].style.opacity = '1';
+                
+                setInterval(() => {
+                    backgrounds[current].style.opacity = '0';
+                    current = (current + 1) % backgrounds.length;
+                    backgrounds[current].style.opacity = '1';
+                }, 5000);
+            }
+        });
+    </script>
+    
+    <style>
+        .hero-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            transition: opacity 2s ease-in-out;
+        }
+    </style>
+</body>
+</html>
