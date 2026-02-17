@@ -2,6 +2,8 @@
 
 **A full-stack travel aggregation platform built to democratize travel access through transparent pricing and innovation.**
 
+> **📌 Repository Note:** This is a **public mirror** of an active private development repository. The single-commit history reflects a clean release for security purposes (secrets removed from git history). For proof of ongoing development, please visit the **[live production site](https://bestflighthoteldeals.com)** featuring 12+ blog posts, automated SEO systems, and real-time API integrations.
+
 [![SDG 9](https://img.shields.io/badge/SDG-9%20Industry%20%26%20Innovation-orange?style=for-the-badge)](https://sdgs.un.org/goals/goal9)
 [![Laravel](https://img.shields.io/badge/Laravel-10.x-red?style=for-the-badge&logo=laravel)](https://laravel.com)
 [![Status](https://img.shields.io/badge/Status-Live-green?style=for-the-badge)](https://bestflighthoteldeals.com)
